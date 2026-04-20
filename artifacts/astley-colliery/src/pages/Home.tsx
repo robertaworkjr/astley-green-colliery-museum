@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, MapPin, Clock, Users, Shield, Compass } from "lucide-react";
+import { ArrowRight, MapPin, Clock, Users, Shield, Compass, ChevronLeft, ChevronRight } from "lucide-react";
 import PanoModal from "@/components/PanoModal";
+import ModelViewer from "@/components/ModelViewer";
 
 export default function Home() {
   const { scrollY } = useScroll();
@@ -23,15 +24,16 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
       
       {/* NAVIGATION */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-between items-center mix-blend-difference text-white">
-        <div className="font-serif text-xl tracking-wide uppercase">Astley Green</div>
-        <div className="hidden md:flex gap-8 text-sm font-medium tracking-widest uppercase">
+      <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-6 flex justify-between items-center" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%)" }}>
+        <div className="font-serif text-xl tracking-wide uppercase text-white drop-shadow-lg">Astley Green</div>
+        <div className="hidden md:flex gap-8 text-sm font-bold tracking-widest uppercase text-white drop-shadow-lg">
           <a href="#about" className="hover:text-primary transition-colors" data-testid="link-about">About</a>
           <a href="#landmarks" className="hover:text-primary transition-colors" data-testid="link-landmarks">Landmarks</a>
+          <a href="#timeline" className="hover:text-primary transition-colors">Timeline</a>
           <a href="#community" className="hover:text-primary transition-colors" data-testid="link-community">Community</a>
           <a href="#archive" className="hover:text-primary transition-colors" data-testid="link-archive">Archive</a>
         </div>
-        <a href="#visit" className="border border-white/30 px-6 py-2 text-sm uppercase tracking-widest hover:bg-white hover:text-black transition-colors" data-testid="link-visit">
+        <a href="#visit" className="border border-white/60 px-6 py-2 text-sm uppercase tracking-widest font-bold text-white hover:bg-white hover:text-black transition-colors drop-shadow-lg" data-testid="link-visit">
           Plan Visit
         </a>
       </nav>
@@ -87,16 +89,20 @@ export default function Home() {
               <p>
                 Situated on the edge of Chat Moss, in an area once full of collieries, Astley Green Colliery Museum stands as a testament to the mining communities of Lancashire. 
               </p>
+              <blockquote className="pull-quote">
+                "Every rivet in this headgear is a word in a sentence about what it meant to work underground."
+              </blockquote>
               <p>
                 Preserved through community foresight and care, this site was saved from demolition by Lancashire County Council and dedicated local figures. Today, it is run and maintained by the Lancashire Mining Museum charity, offering free access to all who wish to understand the weight of real working lives.
               </p>
               <p>
                 Occupying fifteen acres with the Bridgewater Canal and Astley Moss to the south, the picturesque village of Astley Green remains at the heart of the site.
               </p>
+              <p className="article-meta">Last updated: June 2025</p>
             </div>
           </div>
           <div className="relative h-[600px]">
-            <img src="/images/miners001.jpg" alt="Miners at Astley Green" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+            <img src="/images/miners001.jpg" alt="Miners at Astley Green" className="archive-photo w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
             <div className="absolute inset-0 border border-border/50 m-4 pointer-events-none" />
           </div>
         </motion.div>
@@ -237,7 +243,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* TIMELINE */}
+      <hr className="gold-rule" />
+      <section id="timeline" className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mb-20">
+          <p className="text-primary font-mono text-sm tracking-[0.2em] uppercase mb-4">Est. 1912</p>
+          <h2 className="text-4xl md:text-5xl font-serif mb-4">A Century of Industry</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl">From sinking the shaft to the last coal drawn — the defining moments of Astley Green.</p>
+        </motion.div>
+        <HistoryTimeline />
+      </section>
+
+      {/* BEFORE / AFTER */}
+      <hr className="gold-rule" />
+      <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mb-12">
+          <h2 className="text-4xl font-serif mb-4">Then &amp; Now</h2>
+          <p className="text-muted-foreground text-lg">Drag to compare the colliery as it was and as it stands today.</p>
+        </motion.div>
+        <BeforeAfterSlider
+          before="/images/miners002.jpg"
+          after="/images/miners003.jpg"
+          beforeLabel="c. 1940s — Peak Production"
+          afterLabel="Today — Preserved"
+        />
+      </section>
+
       {/* GALLERY */}
+      <hr className="gold-rule" />
       <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
         <motion.div 
           initial="hidden"
@@ -264,17 +297,40 @@ export default function Home() {
 
       {pano && <PanoModal src={pano.src} title={pano.title} onClose={() => setPano(null)} />}
 
+      {/* MINER'S HELMET — 3D OBJECT */}
+      <hr className="gold-rule" />
+      <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mb-12 text-center">
+          <p className="text-primary font-mono text-sm tracking-[0.2em] uppercase mb-4">Artefact — Interactive 3D</p>
+          <h2 className="text-4xl md:text-5xl font-serif mb-4">Miner's Helmet</h2>
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            A carbide lamp helmet of the kind worn by miners at Astley Green. Drag to rotate, scroll to zoom.
+          </p>
+        </motion.div>
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+          style={{ maxWidth: "800px", margin: "0 auto", borderRadius: "4px", overflow: "hidden", boxShadow: "0 0 60px rgba(212,175,55,0.08)" }}
+        >
+          <ModelViewer src="/helmet.glb" />
+        </motion.div>
+      </section>
+
       {/* FOOTER */}
       <footer id="visit" className="bg-card border-t border-border py-16 px-6 md:px-12 text-center md:text-left">
         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
           <div className="md:col-span-2">
             <h3 className="font-serif text-2xl mb-4 text-foreground">Astley Green Colliery</h3>
             <p className="text-muted-foreground max-w-sm mb-6">
-              A living memorial to the mining communities of Lancashire. Run and maintained by Lancashire Mining Museum, a registered charity.
-            </p>
-            <p className="text-sm font-mono text-muted-foreground uppercase tracking-widest">
-              Open to all. No charge for access.
-            </p>
+                A living memorial to the mining communities of Lancashire. Run and maintained by Lancashire Mining Museum, a registered charity.
+              </p>
+              <p className="text-sm font-mono text-muted-foreground uppercase tracking-widest mb-8">
+                Open to all. No charge for access.
+              </p>
+              <a
+                href="#donate"
+                className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 uppercase tracking-widest text-sm font-bold hover:bg-primary/90 transition-colors"
+              >
+                ♦ Donate &amp; Support the Museum
+              </a>
           </div>
           <div>
             <h4 className="font-medium text-foreground uppercase tracking-widest text-sm mb-6">Navigation</h4>
@@ -335,7 +391,7 @@ function GalleryItem({ src, alt, is360, onClick }: { src: string, alt: string, i
       <img
         src={src}
         alt={alt}
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        className="archive-photo w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
         <span className="text-white font-medium uppercase tracking-widest text-sm">{alt}</span>
@@ -350,6 +406,109 @@ function GalleryItem({ src, alt, is360, onClick }: { src: string, alt: string, i
           <span style={{ fontSize: "0.55rem", letterSpacing: "0.18em", color: "#d4af37", textTransform: "uppercase" }}>View 360°</span>
         </div>
       )}
+    </div>
+  );
+}
+
+const TIMELINE_EVENTS = [
+  { year: "1908", title: "Shaft Sinking Begins", desc: "The Manchester Collieries company begins sinking the two shafts at Astley Green. It would take four years to reach the coal seam at over 800 yards depth." },
+  { year: "1912", title: "First Coal Drawn", desc: "The colliery becomes fully operational. The massive Yates and Thom winding engine — developing 3,300 horsepower — hauls coal from the deep Lancashire seams." },
+  { year: "1930s", title: "Peak Production", desc: "Astley Green reaches its height of output. Hundreds of local men and boys work underground and on the surface, making the pit the economic heartbeat of the village." },
+  { year: "1947", title: "Nationalisation", desc: "Under the post-war Labour government, all British collieries pass into state ownership. Astley Green becomes part of the National Coal Board." },
+  { year: "1970", title: "Closure Announced", desc: "Declining reserves and rising costs lead to the closure of Astley Green Colliery. The last shift is worked and the pit falls silent." },
+  { year: "1979", title: "Saved from Demolition", desc: "Lancashire County Council and local campaigners intervene to prevent the demolition of the headgear and engine house. Preservation work begins." },
+  { year: "Today", title: "A Living Museum", desc: "The site operates as a free-access heritage museum run by volunteers. The winding engine still runs on open days. The last pit headgear in Lancashire stands as a monument to those who worked below." },
+];
+
+function HistoryTimeline() {
+  const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    nodeRefs.current.forEach((el) => { if (el) observer.observe(el); });
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className="relative">
+      {/* vertical line */}
+      <div className="absolute left-[11px] md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
+      <div className="space-y-16">
+        {TIMELINE_EVENTS.map((event, i) => (
+          <div
+            key={event.year}
+            ref={(el) => { nodeRefs.current[i] = el; }}
+            className={`timeline-node relative flex flex-col md:flex-row gap-8 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
+          >
+            {/* dot */}
+            <div className="absolute left-0 md:left-1/2 top-2 w-6 h-6 -translate-x-1/2 border border-primary/60 bg-background flex items-center justify-center">
+              <div className="w-2 h-2 bg-primary" />
+            </div>
+            <div className={`md:w-1/2 ${i % 2 === 0 ? "md:pr-16 pl-10 md:pl-0 md:text-right" : "md:pl-16 pl-10 md:pl-16"}`}>
+              <p className="text-primary font-mono text-xs tracking-widest uppercase mb-2">{event.year}</p>
+              <h3 className="text-xl font-serif mb-3">{event.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">{event.desc}</p>
+            </div>
+            <div className="hidden md:block md:w-1/2" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BeforeAfterSlider({ before, after, beforeLabel, afterLabel }: { before: string, after: string, beforeLabel: string, afterLabel: string }) {
+  const [pos, setPos] = useState(50);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+
+  const updatePos = useCallback((clientX: number) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const pct = Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+    setPos(pct);
+  }, []);
+
+  const onMouseDown = () => { dragging.current = true; };
+  const onMouseMove = (e: React.MouseEvent) => { if (dragging.current) updatePos(e.clientX); };
+  const onMouseUp = () => { dragging.current = false; };
+  const onTouchMove = (e: React.TouchEvent) => { updatePos(e.touches[0].clientX); };
+
+  return (
+    <div
+      ref={containerRef}
+      className="before-after-container w-full aspect-[16/7]"
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseUp}
+      onTouchMove={onTouchMove}
+    >
+      {/* Before */}
+      <img src={before} alt={beforeLabel} className="archive-photo w-full h-full object-cover" />
+      {/* After */}
+      <div className="before-after-after" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}>
+        <img src={after} alt={afterLabel} className="w-full h-full object-cover" style={{ width: `${100 / (pos / 100)}%`, maxWidth: "none" }} />
+      </div>
+      {/* Divider */}
+      <div className="before-after-divider" style={{ left: `${pos}%` }}>
+        <div className="before-after-handle">
+          <ChevronLeft className="w-3 h-3 text-black absolute left-1" />
+          <ChevronRight className="w-3 h-3 text-black absolute right-1" />
+        </div>
+      </div>
+      {/* Labels */}
+      <div className="absolute bottom-4 left-4 font-mono text-xs uppercase tracking-widest text-white/70 bg-black/50 px-3 py-1 backdrop-blur-sm">{beforeLabel}</div>
+      <div className="absolute bottom-4 right-4 font-mono text-xs uppercase tracking-widest text-white/70 bg-black/50 px-3 py-1 backdrop-blur-sm">{afterLabel}</div>
     </div>
   );
 }
