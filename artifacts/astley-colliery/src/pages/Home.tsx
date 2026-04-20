@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, PlayCircle, MapPin, Clock, Users, Shield, Compass } from "lucide-react";
+import { ArrowRight, MapPin, Clock, Users, Shield, Compass } from "lucide-react";
+import PanoModal from "@/components/PanoModal";
 
 export default function Home() {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
   const y2 = useTransform(scrollY, [0, 1000], [0, -100]);
+  const [pano, setPano] = useState<{ src: string; title: string } | null>(null);
   
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
@@ -43,8 +45,8 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/40 z-10" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background z-10" />
           <img 
-            src="/headgear.png" 
-            alt="Astley Green Headgear at golden hour" 
+            src="/images/newminer01.jpg" 
+            alt="Astley Green Colliery" 
             className="w-full h-full object-cover"
           />
         </motion.div>
@@ -94,7 +96,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative h-[600px]">
-            <img src="/landscape-canal.png" alt="Canal and Moss landscape" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+            <img src="/images/miner's001.jpg" alt="Miners at Astley Green" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
             <div className="absolute inset-0 border border-border/50 m-4 pointer-events-none" />
           </div>
         </motion.div>
@@ -124,7 +126,7 @@ export default function Home() {
             {/* Highlight 1 */}
             <motion.div variants={fadeUp} className="grid lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7 h-[500px] relative">
-                <img src="/headgear.png" alt="Headgear" className="w-full h-full object-cover" />
+                <img src="/images/miner's002.jpg" alt="Headgear" className="w-full h-full object-cover" />
               </div>
               <div className="lg:col-span-5">
                 <div className="text-primary font-mono text-sm mb-4">01 // Grade II Listed</div>
@@ -145,14 +147,14 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:col-span-7 h-[500px] relative lg:order-2 order-1">
-                <img src="/engine-house.png" alt="Engine House" className="w-full h-full object-cover" />
+                <img src="/images/miner's003.jpg" alt="Engine House" className="w-full h-full object-cover" />
               </div>
             </motion.div>
 
             {/* Highlight 3 */}
             <motion.div variants={fadeUp} className="grid lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7 h-[500px] relative">
-                <img src="/winding-engine.png" alt="Winding Engine" className="w-full h-full object-cover" />
+                <img src="/images/miner's004.jpg" alt="Winding Engine" className="w-full h-full object-cover" />
               </div>
               <div className="lg:col-span-5">
                 <div className="text-primary font-mono text-sm mb-4">03 // 3,300 Horsepower</div>
@@ -199,7 +201,7 @@ export default function Home() {
       {/* ARCHIVE FILMS */}
       <section id="archive" className="py-32 relative bg-black overflow-hidden border-y border-border">
         <div className="absolute inset-0 opacity-40">
-          <img src="/miners-archive.png" alt="Miners Archive" className="w-full h-full object-cover" />
+          <img src="/images/newminer01.jpg" alt="Miners Archive" className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
         
@@ -209,18 +211,28 @@ export default function Home() {
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="max-w-2xl"
+            className="w-full"
           >
             <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">Archive Films</h2>
-            <p className="text-white/70 text-lg mb-8 leading-relaxed">
+            <p className="text-white/70 text-lg mb-10 leading-relaxed max-w-2xl">
               Watch footage from the collection. Explore newly added video clips from the Astley archive and see more of the people, spaces, and working life connected to the colliery.
             </p>
-            <button 
-              className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 uppercase tracking-widest text-sm font-medium hover:bg-white/90 transition-colors"
-              data-testid="btn-watch-archive"
-            >
-              <PlayCircle className="w-5 h-5" /> Explore Archive
-            </button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { src: "/video/archive-01.mp4", label: "Archive Film 01" },
+                { src: "/video/archive-02.mp4", label: "Archive Film 02" },
+                { src: "/video/archive-03.mp4", label: "Archive Film 03" },
+              ].map((v) => (
+                <div key={v.src} className="flex flex-col gap-2">
+                  <video
+                    src={v.src}
+                    controls
+                    className="w-full aspect-video bg-black border border-white/10"
+                  />
+                  <p className="text-white/50 text-xs uppercase tracking-widest">{v.label}</p>
+                </div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </section>
@@ -239,11 +251,18 @@ export default function Home() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GalleryItem src="/gallery-1.png" alt="Riveted iron detail" />
-          <GalleryItem src="/gallery-2.png" alt="Mining objects" />
-          <GalleryItem src="/gallery-3.png" alt="Museum interior" />
+          <GalleryItem src="/images/miner's001.jpg" alt="Miners at the pit" />
+          <GalleryItem src="/images/miner's002.jpg" alt="Colliery workers" />
+          <GalleryItem
+            src="/images/astley-colliery-360.JPG"
+            alt="Astley Green site"
+            is360
+            onClick={() => setPano({ src: "/images/astley-colliery-360.JPG", title: "Astley Green — 360° View" })}
+          />
         </div>
       </section>
+
+      {pano && <PanoModal src={pano.src} title={pano.title} onClose={() => setPano(null)} />}
 
       {/* FOOTER */}
       <footer id="visit" className="bg-card border-t border-border py-16 px-6 md:px-12 text-center md:text-left">
@@ -307,17 +326,30 @@ function ThemeCard({ icon, title, desc, testId }: { icon: React.ReactNode, title
   );
 }
 
-function GalleryItem({ src, alt }: { src: string, alt: string }) {
+function GalleryItem({ src, alt, is360, onClick }: { src: string, alt: string, is360?: boolean, onClick?: () => void }) {
   return (
-    <div className="relative group overflow-hidden bg-muted aspect-[4/3]">
-      <img 
-        src={src} 
-        alt={alt} 
-        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+    <div
+      className="relative group overflow-hidden bg-muted aspect-[4/3] cursor-pointer"
+      onClick={onClick}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
         <span className="text-white font-medium uppercase tracking-widest text-sm">{alt}</span>
       </div>
+      {is360 && (
+        <div style={{ position: "absolute", top: "1rem", right: "1rem", border: "1px solid rgba(212,175,55,0.5)", padding: "0.35rem 0.75rem", background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.2" width="13" height="13">
+            <ellipse cx="12" cy="12" rx="10" ry="10" />
+            <ellipse cx="12" cy="12" rx="4" ry="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+          </svg>
+          <span style={{ fontSize: "0.55rem", letterSpacing: "0.18em", color: "#d4af37", textTransform: "uppercase" }}>View 360°</span>
+        </div>
+      )}
     </div>
   );
 }
