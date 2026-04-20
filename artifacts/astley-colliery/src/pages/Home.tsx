@@ -96,7 +96,7 @@ export default function Home() {
             </div>
           </div>
           <div className="relative h-[600px]">
-            <img src="/images/miner's001.jpg" alt="Miners at Astley Green" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+            <img src="/images/miners001.jpg" alt="Miners at Astley Green" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" />
             <div className="absolute inset-0 border border-border/50 m-4 pointer-events-none" />
           </div>
         </motion.div>
@@ -126,7 +126,7 @@ export default function Home() {
             {/* Highlight 1 */}
             <motion.div variants={fadeUp} className="grid lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7 h-[500px] relative">
-                <img src="/images/miner's002.jpg" alt="Headgear" className="w-full h-full object-cover" />
+                <img src="/images/miners002.jpg" alt="Headgear" className="w-full h-full object-cover" />
               </div>
               <div className="lg:col-span-5">
                 <div className="text-primary font-mono text-sm mb-4">01 // Grade II Listed</div>
@@ -147,14 +147,14 @@ export default function Home() {
                 </p>
               </div>
               <div className="lg:col-span-7 h-[500px] relative lg:order-2 order-1">
-                <img src="/images/miner's003.jpg" alt="Engine House" className="w-full h-full object-cover" />
+                <img src="/images/miners003.jpg" alt="Engine House" className="w-full h-full object-cover" />
               </div>
             </motion.div>
 
             {/* Highlight 3 */}
             <motion.div variants={fadeUp} className="grid lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-7 h-[500px] relative">
-                <img src="/images/miner's004.jpg" alt="Winding Engine" className="w-full h-full object-cover" />
+                <img src="/images/miners004.jpg" alt="Winding Engine" className="w-full h-full object-cover" />
               </div>
               <div className="lg:col-span-5">
                 <div className="text-primary font-mono text-sm mb-4">03 // 3,300 Horsepower</div>
@@ -251,8 +251,8 @@ export default function Home() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GalleryItem src="/images/miner's001.jpg" alt="Miners at the pit" />
-          <GalleryItem src="/images/miner's002.jpg" alt="Colliery workers" />
+          <GalleryItem src="/images/miners001.jpg" alt="Miners at the pit" />
+          <GalleryItem src="/images/miners002.jpg" alt="Colliery workers" />
           <GalleryItem
             src="/images/astley-colliery-360.JPG"
             alt="Astley Green site"
