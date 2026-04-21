@@ -301,6 +301,12 @@ body::after {
   margin: 0;
 }
 
+/* Audio bar equaliser animation */
+@keyframes audiobar {
+  from { transform: scaleY(0.4); }
+  to   { transform: scaleY(1); }
+}
+
 /* Last-updated label */
 .article-meta {
   font-family: Menlo, monospace;

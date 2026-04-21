@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, MapPin, Clock, Users, Shield, Compass, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, MapPin, Clock, Users, Shield, Compass, ChevronLeft, ChevronRight, Volume2, Pause } from "lucide-react";
 import PanoModal from "@/components/PanoModal";
 import ModelViewer from "@/components/ModelViewer";
 
@@ -9,6 +9,39 @@ export default function Home() {
   const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
   const y2 = useTransform(scrollY, [0, 1000], [0, -100]);
   const [pano, setPano] = useState<{ src: string; title: string } | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleAudio = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio("/AudioAstley/TheAudioIntroAstleyGreen.mp3");
+      audioRef.current.onended = () => setIsPlaying(false);
+    }
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const [isPlaying2, setIsPlaying2] = useState(false);
+  const audioRef2 = useRef<HTMLAudioElement | null>(null);
+
+  const toggleAudio2 = () => {
+    if (!audioRef2.current) {
+      audioRef2.current = new Audio("/AudioAstley/TheAudioIntroAstleyGreen2.mp3");
+      audioRef2.current.onended = () => setIsPlaying2(false);
+    }
+    if (isPlaying2) {
+      audioRef2.current.pause();
+      setIsPlaying2(false);
+    } else {
+      audioRef2.current.play();
+      setIsPlaying2(true);
+    }
+  };
   
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
@@ -63,13 +96,37 @@ export default function Home() {
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif leading-tight mb-8">
               Heavy Industry <br/><span className="italic text-muted-foreground">Preserved in Amber</span>
             </h1>
-            <a 
-              href="#about"
-              className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 uppercase tracking-widest text-sm font-medium hover:bg-primary/90 transition-colors"
-              data-testid="btn-start-tour"
-            >
-              Start the Tour <ArrowRight className="w-4 h-4" />
-            </a>
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+              <a 
+                href="#about"
+                className="inline-flex items-center gap-3 bg-primary text-primary-foreground px-8 py-4 uppercase tracking-widest text-sm font-medium hover:bg-primary/90 transition-colors"
+                data-testid="btn-start-tour"
+              >
+                Start the Tour <ArrowRight className="w-4 h-4" />
+              </a>
+
+              <button
+                onClick={toggleAudio}
+                data-testid="btn-listen"
+                className="inline-flex items-center gap-3 border border-white/70 text-white px-8 py-4 uppercase tracking-widest text-sm font-medium hover:bg-white/10 transition-colors backdrop-blur-sm group"
+              >
+                {isPlaying ? (
+                  <>
+                    <span className="flex items-center gap-1">
+                      <span className="w-0.5 h-3 bg-white animate-[audiobar_0.7s_ease-in-out_infinite_alternate]" />
+                      <span className="w-0.5 h-5 bg-white animate-[audiobar_0.7s_ease-in-out_0.15s_infinite_alternate]" />
+                      <span className="w-0.5 h-2 bg-white animate-[audiobar_0.7s_ease-in-out_0.3s_infinite_alternate]" />
+                    </span>
+                    Pause Audio
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-4 h-4" />
+                    Listen
+                  </>
+                )}
+              </button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -219,7 +276,30 @@ export default function Home() {
             variants={fadeUp}
             className="w-full"
           >
-            <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">Archive Films</h2>
+            <div className="flex flex-wrap items-center gap-6 mb-6">
+              <h2 className="text-4xl md:text-5xl font-serif text-white">Archive Films</h2>
+              <button
+                onClick={toggleAudio2}
+                data-testid="btn-listen-archive"
+                className="inline-flex items-center gap-3 border border-white/70 text-white px-6 py-3 uppercase tracking-widest text-xs font-medium hover:bg-white/10 transition-colors backdrop-blur-sm shrink-0"
+              >
+                {isPlaying2 ? (
+                  <>
+                    <span className="flex items-center gap-1">
+                      <span className="w-0.5 h-3 bg-white animate-[audiobar_0.7s_ease-in-out_infinite_alternate]" />
+                      <span className="w-0.5 h-5 bg-white animate-[audiobar_0.7s_ease-in-out_0.15s_infinite_alternate]" />
+                      <span className="w-0.5 h-2 bg-white animate-[audiobar_0.7s_ease-in-out_0.3s_infinite_alternate]" />
+                    </span>
+                    Pause Audio
+                  </>
+                ) : (
+                  <>
+                    <Volume2 className="w-4 h-4" />
+                    Listen
+                  </>
+                )}
+              </button>
+            </div>
             <p className="text-white/70 text-lg mb-10 leading-relaxed max-w-2xl">
               Watch footage from the collection. Explore newly added video clips from the Astley archive and see more of the people, spaces, and working life connected to the colliery.
             </p>
